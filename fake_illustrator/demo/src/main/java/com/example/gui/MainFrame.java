@@ -35,6 +35,9 @@ public class MainFrame extends JFrame {
     private JToggleButton btTriangle;
     private JToggleButton btMove;
 
+    private DefaultObject activeObject;
+    private Point initialMousePosition;
+
     public MainFrame() {
         super("Fake Illustrator");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -47,26 +50,62 @@ public class MainFrame extends JFrame {
 
         panel.addMouseListener(new MouseAdapter() {
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    if(btMove.isSelected()) {
+                        for (int i = sceneObjects.size() - 1; i >= 0; i--) {
+                            if(sceneObjects.get(i).contains(e.getX(), e.getY())) {
+                                activeObject = sceneObjects.get(i);
+                                sceneObjects.remove(i);
+                                sceneObjects.add(activeObject);
+                                initialMousePosition = e.getPoint();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(e.getButton() == MouseEvent.BUTTON1) {
-                    if(btSquare.isSelected()) {
-                        sceneObjects.add(new Rectangle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), 25));
-                    }
-                    if(btRectangle.isSelected()) {
-                        sceneObjects.add(new Rectangle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), 25, 35));
-                    }
-                    if(btCircle.isSelected()) {
-                        sceneObjects.add(new Circle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), 25));
-                    }
-                    if(btTriangle.isSelected()) {
-                        sceneObjects.add(new Triangle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), 25));
-                    }
-                    repaint();
+
+                if(btSquare.isSelected()) {
+                    sceneObjects.add(new Rectangle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), (e.getButton() == MouseEvent.BUTTON1) ? true : false, 25));
+                }
+                if(btRectangle.isSelected()) {
+                    sceneObjects.add(new Rectangle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), (e.getButton() == MouseEvent.BUTTON1) ? true : false, 25, 35));
+                }
+                if(btCircle.isSelected()) {
+                    sceneObjects.add(new Circle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), (e.getButton() == MouseEvent.BUTTON1) ? true : false, 25));
+                }
+                if(btTriangle.isSelected()) {
+                    sceneObjects.add(new Triangle(new Point(e.getX(), e.getY()), RandomColor.getRandomColor(), (e.getButton() == MouseEvent.BUTTON1) ? true : false, 25));
+                }
+
+                repaint();
+
+                if(btMove.isSelected()) {
+                    activeObject = null;
                 }
             }
         
+        });
+
+        panel.addMouseMotionListener(new MouseMotionAdapter() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if(btMove.isSelected() && activeObject != null) {
+                    int diffX = e.getX() - initialMousePosition.x;
+                    int diffY = e.getY() - initialMousePosition.y;
+
+                    activeObject.setPosition(activeObject.getPosition().x + diffX, activeObject.getPosition().y + diffY);
+                    initialMousePosition = e.getPoint();
+                    repaint();
+                }
+            }
+
         });
 
         add(panel, BorderLayout.CENTER);
@@ -93,12 +132,13 @@ public class MainFrame extends JFrame {
         group.add(btMove);
     }
 
+    /*
     private void initTestData() {
         sceneObjects.add(new Rectangle(new Point(500, 100), Color.BLUE, 100, 150));
         sceneObjects.add(new Rectangle(new Point(200, 100), Color.RED, 150));
         sceneObjects.add(new Circle(new Point(300, 100), Color.GREEN, 200));
         sceneObjects.add(new Circle(new Point(100, 300), Color.BLACK, 100));
-    }
+    }*/
 
 
 }

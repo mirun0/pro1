@@ -9,19 +9,20 @@ public class Triangle extends DefaultObject {
     protected int a;
     protected int height;
 
-    public Triangle(Point position, Color color, int a) {
-        super(position, color);
+    public Triangle(Point position, Color color, boolean fill, int a) {
+        super(position, color, fill);
         this.a = a;
         this.height = (int)(a * Math.sqrt(3) / 2);
     }
 
     @Override
     public boolean contains(int x, int y) {
+        Point p = new Point(x, y);
         Point b = new Point(position.x, position.y);
         Point c = new Point(position.x + a / 2, position.y + height);
         Point d = new Point(position.x - a / 2, position.y + height);
         
-        return Math.abs(area(b, c, d) - (area(position, c, d) + area(b, position, d) + area(b, c, position))) < 1;
+        return Math.abs(area(b, c, d) - (area(p, c, d) + area(b, p, d) + area(b, c, p))) < 0.1;
     }
 
     public double area(Point a, Point b, Point c) {
@@ -31,7 +32,12 @@ public class Triangle extends DefaultObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.drawPolygon(new int[]{position.x, position.x + a / 2, position.x - a / 2}, new int[]{position.y, position.y + height, position.y + height}, 3);
+        if(fill) {
+            g.fillPolygon(new int[]{position.x, position.x + a / 2, position.x - a / 2}, new int[]{position.y, position.y + height, position.y + height}, 3);
+
+        } else {
+            g.drawPolygon(new int[]{position.x, position.x + a / 2, position.x - a / 2}, new int[]{position.y, position.y + height, position.y + height}, 3);
+        }
     }
     
 }

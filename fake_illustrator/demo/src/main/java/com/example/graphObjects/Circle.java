@@ -8,8 +8,8 @@ public class Circle extends DefaultObject {
 
     protected int r;
 
-    public Circle(Point position, Color color, int r) {
-        super(position, color);
+    public Circle(Point position, Color color, boolean fill, int r) {
+        super(position, color, fill);
         this.r = r;
     }
 
@@ -21,7 +21,10 @@ public class Circle extends DefaultObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.drawOval(position.x, position.y, 2*r, 2*r);
+        if(fill) {
+            g.fillOval(position.x, position.y,  2 * r, 2 * r);
+        } else {
+            g.drawOval(position.x, position.y, 2 * r, 2 * r);
+        }
     }
-    
 }

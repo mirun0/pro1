@@ -9,14 +9,14 @@ public class Rectangle extends DefaultObject {
     protected int a;
     protected int b;
 
-    public Rectangle(Point position, Color color, int a, int b) {
-        super(position, color);
+    public Rectangle(Point position, Color color, boolean fill, int a, int b) {
+        super(position, color, fill);
         this.a = a;
         this.b = b;
     }
 
-    public Rectangle(Point position, Color color, int a) {
-        super(position, color);
+    public Rectangle(Point position, Color color, boolean fill, int a) {
+        super(position, color, fill);
         this.a = a;
         this.b = a;
     }
@@ -29,7 +29,11 @@ public class Rectangle extends DefaultObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.drawRect(position.x, position.y, a, b);
+        if(fill) {
+            g.fillRect(position.x, position.y, a, b);
+        } else {
+            g.drawRect(position.x, position.y, a, b);
+        }
     }
     
 }

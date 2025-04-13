@@ -8,15 +8,18 @@ public abstract class DefaultObject {
     
     protected Point position;
     protected Color color;
+    protected boolean fill;
 
-    public DefaultObject(Point position, Color color) {
+    public DefaultObject(Point position, Color color, boolean fill) {
         this.position = position;
         this.color = color;
+        this.fill = fill;
     }
 
     public DefaultObject() {
         position = new Point(0, 0);
         color = Color.BLACK;
+        this.fill = false;
     }
 
     public Point getPosition() {
@@ -33,6 +36,14 @@ public abstract class DefaultObject {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public boolean isFill() {
+        return fill;
+    }
+
+    public void setFill(boolean fill) {
+        this.fill = fill;
     }
 
     public abstract boolean contains(int x, int y);
