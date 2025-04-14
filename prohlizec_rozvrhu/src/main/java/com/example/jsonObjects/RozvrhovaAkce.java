@@ -8,6 +8,30 @@ public class RozvrhovaAkce {
     Hodina hodinaSkutOd;
     Hodina hodinaSkutDo;
 
+    public String getNazev() {
+        return nazev;
+    }
+
+    public String getPredmet() {
+        return predmet;
+    }
+
+    public Ucitel getUcitel() {
+        return ucitel;
+    }
+
+    public String getDen() {
+        return den;
+    }
+
+    public Hodina getHodinaSkutOd() {
+        return hodinaSkutOd;
+    }
+
+    public Hodina getHodinaSkutDo() {
+        return hodinaSkutDo;
+    }
+
     @Override
     public String toString() {
         return nazev + " " + predmet + " " + ucitel + " " + den + " od: " + hodinaSkutOd + " do: " + hodinaSkutDo;
