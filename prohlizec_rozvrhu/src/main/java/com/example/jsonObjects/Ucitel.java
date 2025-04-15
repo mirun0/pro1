@@ -8,6 +8,14 @@ public class Ucitel {
 
     @Override
     public String toString() {
-        return titulPred + " " + jmeno + " " + prijmeni + " " + titulZa;
+        String str = jmeno + " " + prijmeni;
+        if(titulPred != null) {
+            str = titulPred + " " + str;
+        }
+        if(titulZa != null) {
+            str += " " + titulZa;
+        }
+
+        return str;
     }
 }

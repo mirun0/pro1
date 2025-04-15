@@ -7,6 +7,14 @@ public class RozvrhovaAkce {
     String den;
     Hodina hodinaSkutOd;
     Hodina hodinaSkutDo;
+    String semestr;
+
+    public RozvrhovaAkce() {
+    }
+
+    public String getSemestr() {
+        return semestr;
+    }
 
     public String getNazev() {
         return nazev;

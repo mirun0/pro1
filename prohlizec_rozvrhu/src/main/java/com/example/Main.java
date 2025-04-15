@@ -1,48 +1,40 @@
 package com.example;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.example.gui.MainFrame;
 import com.example.jsonObjects.Mistnost;
 import com.formdev.flatlaf.FlatDarkLaf;
 
-public class Main { 
+public class Main {
+
+    private static HashMap<String, ArrayList<String>> mistnosti = new HashMap<>();
+    private static RozvrhJsonReader jsonReader = new RozvrhJsonReader();
     public static void main(String[] args) throws IOException { 
-      
-        try {
+      try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
 
+        parseMistnosti();
+        new MainFrame(jsonReader, mistnosti);
 
-        RozvrhJsonReader jsonReader = new RozvrhJsonReader();
-        Mistnost[] mistnosti = jsonReader.readMistnosti();
+    }
 
-        for (Mistnost mistnost : mistnosti) {
-            System.out.println(mistnost);
+    private static void parseMistnosti() throws IOException {
+        List<Mistnost> rozAkce = jsonReader.readMistnosti();
+        for (Mistnost mistnost : rozAkce) {
+            if(!mistnosti.containsKey(mistnost.getZkrBudovy())) {
+                mistnosti.put(mistnost.getZkrBudovy(), new ArrayList<String>());
+            }
+            mistnosti.get(mistnost.getZkrBudovy()).add(mistnost.getCisloMistnosti());
         }
-
-
-
-        // MainFrame mainFrame = new MainFrame();
-
-        //Reader reader = new InputStreamReader(new FileInputStream("src/main/resources/test_data.json"), "UTF-8");
-        /*String mistnost = "J1";
-        URL url = new URL("https://stag-demo.uhk.cz/ws/services/rest2/rozvrhy/getRozvrhByMistnost?semestr=%25&budova=J&mistnost=" + mistnost + "&outputFormat=JSON"); // Změň na svou API URL
-        InputStream input = url.openStream();
-        Reader reader = new InputStreamReader(input, "UTF-8");
-
-        JsonElement rootElement = JsonParser.parseReader(reader);
-        JsonObject rootObj = rootElement.getAsJsonObject();
-
-        RozvrhovaAkce[] data = gson.fromJson(rootObj.get("rozvrhovaAkce"), RozvrhovaAkce[].class);
-
-        for (RozvrhovaAkce rozvrhovaAkce : data) {
-            System.out.println(rozvrhovaAkce);
-            mainFrame.getTableModel().addRow(new Object[]{rozvrhovaAkce.getPredmet(), rozvrhovaAkce.getNazev(), rozvrhovaAkce.getUcitel(), rozvrhovaAkce.getDen(), rozvrhovaAkce.getHodinaSkutOd(), rozvrhovaAkce.getHodinaSkutDo()});
-        }*/
     }
 }
