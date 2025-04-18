@@ -10,15 +10,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
+import javax.swing.ToolTipManager;
 import javax.swing.table.DefaultTableModel;
 
 import com.example.RozvrhJsonReader;
 import com.example.jsonObjects.RozvrhovaAkce;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -30,8 +35,10 @@ import java.util.List;
 public class MainFrame extends JFrame {
 
     private DefaultTableModel tableModel = new DefaultTableModel();
+    RozvrhTableModel rozvrhTableModel;
     private HashMap<String, ArrayList<String>> mistnosti;
     private RozvrhJsonReader jsonReader;
+    List<RozvrhovaAkce> rozvrhoveAkce;
 
     private JComboBox<String> semestrComboBox;
     private JComboBox<String> budovaComboBox;
@@ -110,6 +117,7 @@ public class MainFrame extends JFrame {
                 String mistnost = (String)mistnostComboBox.getSelectedItem();
 
                 loadDataToTable(semestr, budova, mistnost);
+                rozvrhTableModel.loadRozvrhoveAkce(rozvrhoveAkce);
             }
         });
 
@@ -124,8 +132,7 @@ public class MainFrame extends JFrame {
         navbar.add(searchPanel);
         navbar.add(toggleTablePanel);
         add(navbar, BorderLayout.NORTH);
-
-
+        
         String[][] data = {};
         String[] columnNames = {"Zkratka", "Název", "Učitel", "Den", "Od", "Do"};
 
@@ -145,8 +152,82 @@ public class MainFrame extends JFrame {
         table.getColumnModel().getColumn(4).setPreferredWidth(25);
         table.getColumnModel().getColumn(5).setPreferredWidth(25);
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        add(scrollPane, BorderLayout.CENTER);
+
+
+
+
+
+
+
+
+        JPanel rozvrhPanel = new JPanel();
+        rozvrhPanel.setLayout(new BorderLayout());
+
+
+
+        String[][] dataRozvrh = {};
+        String[] columnNamesRozvrh = {"", "07:25", "08:15", "09:05", "09:55", "10:45", "11:35", "12:25", 
+        "13:15", "14:05", "14:55", "15:45", "16:35", "17:25", "18:15", "19:05", "19:55"};
+
+        rozvrhTableModel = new RozvrhTableModel(dataRozvrh, columnNamesRozvrh) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable rozvrhTable = new JTable(rozvrhTableModel) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+                Object value = getValueAt(rowIndex, colIndex);
+                return value != null ? value.toString() : null;
+                }
+            };
+            
+        JScrollPane scrollPane = new JScrollPane(rozvrhTable);
+
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+        ToolTipManager.sharedInstance().setDismissDelay(5000); 
+
+        rozvrhTable.setRowHeight(45);
+        rozvrhTable.setShowGrid(true);
+        rozvrhTable.getTableHeader().setReorderingAllowed(false);
+        table.getTableHeader().setResizingAllowed(false);
+
+        JPanel bottomPanelR = new JPanel();
+        bottomPanelR.setPreferredSize(new Dimension(100, 189));
+        rozvrhPanel.add(bottomPanelR, BorderLayout.SOUTH);
+
+        JPanel topPanelR = new JPanel();
+        //topPanelR.setPreferredSize(new Dimension(100, 189));
+        topPanelR.setBackground(Color.RED);
+        //rozvrhPanel.add(topPanelR, BorderLayout.NORTH);
+
+        rozvrhPanel.add(scrollPane, BorderLayout.CENTER);
+
+
+        JScrollPane scrollPaneTable = new JScrollPane(table);
+        add(scrollPaneTable, BorderLayout.CENTER);
+
+
+        toggleTableButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (toggleTableButton.isSelected()) {
+                    remove(scrollPaneTable);
+                    add(rozvrhPanel, BorderLayout.CENTER);
+                } else {
+                    remove(rozvrhPanel);
+                    add(scrollPaneTable, BorderLayout.CENTER);
+                }
+
+                revalidate();
+                repaint();
+            }
+        });
 
         JPanel leftPanel = new JPanel();
         add(leftPanel, BorderLayout.WEST);
@@ -160,6 +241,7 @@ public class MainFrame extends JFrame {
 
         loadBudovyComboBox();
         setVisible(true);
+        setResizable(false);
     }
 
     public DefaultTableModel getTableModel() {
@@ -198,7 +280,6 @@ public class MainFrame extends JFrame {
     }
 
     private void loadDataToTable(String semestr, String budova, String mistnost) {
-        List<RozvrhovaAkce> rozvrhoveAkce = null;
         try {
             rozvrhoveAkce = jsonReader.readRozvrhoveAkce(semestr, budova, mistnost);
         } catch (IOException e) {
