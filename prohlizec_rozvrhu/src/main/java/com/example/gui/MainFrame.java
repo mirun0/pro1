@@ -164,12 +164,7 @@ public class MainFrame extends JFrame {
         rozvrhPanel.setLayout(new BorderLayout());
 
 
-
-        String[][] dataRozvrh = {};
-        String[] columnNamesRozvrh = {"", "07:25", "08:15", "09:05", "09:55", "10:45", "11:35", "12:25", 
-        "13:15", "14:05", "14:55", "15:45", "16:35", "17:25", "18:15", "19:05", "19:55"};
-
-        rozvrhTableModel = new RozvrhTableModel(dataRozvrh, columnNamesRozvrh) {
+        rozvrhTableModel = new RozvrhTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;

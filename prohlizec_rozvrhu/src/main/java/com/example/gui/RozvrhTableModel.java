@@ -1,5 +1,6 @@
 package com.example.gui;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
@@ -7,9 +8,13 @@ import javax.swing.table.DefaultTableModel;
 import com.example.jsonObjects.RozvrhovaAkce;
 
 public class RozvrhTableModel extends DefaultTableModel {
+
+    static String[][] data = new String[][]{};
+    static String[] columns = new String[]{"", "07:25", "08:15", "09:05", "09:55", "10:45", "11:35", "12:25", 
+    "13:15", "14:05", "14:55", "15:45", "16:35", "17:25", "18:15", "19:05", "19:55"};
     
-    public RozvrhTableModel(String[][] rows, String[] columns) {
-        super(rows, columns);        
+    public RozvrhTableModel() {
+        super(data, columns);  
     }
 
     public void loadRozvrhoveAkce(List<RozvrhovaAkce> rozvrhoveAkce) {
@@ -22,8 +27,12 @@ public class RozvrhTableModel extends DefaultTableModel {
         data[4][0] = "PÁ";
         data[5][0] = "SO";
 
+        List<String> columnsList = Arrays.asList(columns);
+
         for (RozvrhovaAkce rozvrhovaAkce : rozvrhoveAkce) {
-            data[dayNumber(rozvrhovaAkce.getDen())][timeNumber(rozvrhovaAkce.getHodinaSkutOd().toString())] = rozvrhovaAkce.getPredmet();
+            if(columnsList.contains(rozvrhovaAkce.getHodinaSkutOd().toString())) {
+                data[dayNumber(rozvrhovaAkce.getDen())][timeNumber(rozvrhovaAkce.getHodinaSkutOd().toString())] = rozvrhovaAkce.getPredmet();
+            }
         }
 
         for (String[] row : data) {
@@ -33,9 +42,7 @@ public class RozvrhTableModel extends DefaultTableModel {
 
     private int timeNumber(String time) {
         for (int i = 0; i < getColumnCount(); i++) {
-            System.out.println(time + " dd:" + getColumnName(i));
             if(getColumnName(i).equalsIgnoreCase(time)) {
-                System.out.println(time + " done");
                 return i;
             }
         }
