@@ -1,8 +1,8 @@
 package com.example.jsonObjects;
 
 public class Mistnost {
-    String zkrBudovy;
-    String cisloMistnosti;
+    private String zkrBudovy;
+    private String cisloMistnosti;
 
     public String getZkrBudovy() {
         return zkrBudovy;

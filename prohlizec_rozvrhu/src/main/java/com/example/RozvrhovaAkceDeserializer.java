@@ -22,10 +22,13 @@ class RozvrhovaAkceDeserializer implements JsonDeserializer<List<RozvrhovaAkce>>
         for (JsonElement element : pole) {
             JsonObject obj = element.getAsJsonObject();
             String typAkce = obj.has("typAkce") ? obj.get("typAkce").getAsString() : "";
+            String tyden = obj.has("tydenZkr") ? obj.get("tydenZkr").getAsString() : "";
 
-            if ("Cvičení".equalsIgnoreCase(typAkce) || "Přednáška".equalsIgnoreCase(typAkce)) {
-                RozvrhovaAkce ra = context.deserialize(obj, RozvrhovaAkce.class);
-                vysledek.add(ra);
+            if ("Cvičení".equalsIgnoreCase(typAkce) || "Přednáška".equalsIgnoreCase(typAkce) || "Seminář".equalsIgnoreCase(typAkce) || "Laboratoř".equalsIgnoreCase(typAkce)) {
+                if("K".equalsIgnoreCase(tyden)) {
+                    RozvrhovaAkce ra = context.deserialize(obj, RozvrhovaAkce.class);
+                    vysledek.add(ra);
+                }
             }
         }
 

@@ -1,6 +1,5 @@
 package com.example.gui;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -9,23 +8,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.ToolTipManager;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
 import com.example.RozvrhJsonReader;
 import com.example.jsonObjects.RozvrhovaAkce;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +30,7 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
 
-    private DefaultTableModel tableModel = new DefaultTableModel();
+    private ListRozvrhTableModel tableModel = new ListRozvrhTableModel();
     RozvrhTableModel rozvrhTableModel;
     private HashMap<String, ArrayList<String>> mistnosti;
     private RozvrhJsonReader jsonReader;
@@ -50,7 +43,7 @@ public class MainFrame extends JFrame {
     public MainFrame(RozvrhJsonReader jsonReader, HashMap<String, ArrayList<String>> mistnosti) {
         super("Prohlížeč rozvrhu");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(900, 600);
         setLocationRelativeTo(null);
 
         setLayout(new BorderLayout());
@@ -93,6 +86,7 @@ public class MainFrame extends JFrame {
                 loadMistnostiComboBox((String)budovaComboBox.getSelectedItem());
             }
         });
+
         // mistnost panel
         JPanel misnostPanel = new JPanel();
         misnostPanel.setLayout(new BorderLayout());
@@ -105,7 +99,6 @@ public class MainFrame extends JFrame {
         misnostPanel.add(mistnostComboBox, BorderLayout.CENTER);
 
         // search panel
-
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new BorderLayout());
 
@@ -124,7 +117,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-
         JPanel toggleTablePanel = new JPanel();
         JToggleButton toggleTableButton = new JToggleButton(new ImageIcon(new ImageIcon(getClass().getClassLoader().getResource("table.png")).getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH)));
         toggleTablePanel.add(toggleTableButton);
@@ -136,32 +128,9 @@ public class MainFrame extends JFrame {
         navbar.add(toggleTablePanel);
         add(navbar, BorderLayout.NORTH);
         
-        String[][] data = {};
-        String[] columnNames = {"Zkratka", "Název", "Učitel", "Den", "Od", "Do", "c"};
+        tableModel = new ListRozvrhTableModel();
+        ListRozvrhTable table = new ListRozvrhTable(tableModel);
 
-        tableModel = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        JTable table = new JTable(tableModel) {
-            @Override
-                public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                    Component c = super.prepareRenderer(renderer, row, column);
-                    if (!isRowSelected(row)) {
-                        Color baseColor = Color.decode("#" + (String)this.getValueAt(row, 6));
-                        c.setBackground(baseColor);
-                    } else {
-                        c.setBackground(getSelectionBackground());
-                    }
-
-                    this.setOpaque(true);
-                    return c;
-                }
-        };
-        // table.getTableHeader().setReorderingAllowed(false);
         table.setAutoCreateRowSorter(true);
         table.getColumnModel().getColumn(0).setPreferredWidth(20);
         table.getColumnModel().getColumn(1).setPreferredWidth(175);
@@ -175,40 +144,18 @@ public class MainFrame extends JFrame {
         table.getColumnModel().getColumn(6).setMaxWidth(0);
 
 
-
-
-
-
-
-
-
-
         JPanel rozvrhPanel = new JPanel();
         rozvrhPanel.setLayout(new BorderLayout());
 
 
-        rozvrhTableModel = new RozvrhTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        rozvrhTableModel = new RozvrhTableModel();
 
-        JTable rozvrhTable = new JTable(rozvrhTableModel) {
-            @Override
-            public String getToolTipText(MouseEvent e) {
-                Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-                Object value = getValueAt(rowIndex, colIndex);
-                return value != null ? value.toString() : null;
-                }
-            };
-            
+        RozvrhTable rozvrhTable = new RozvrhTable(rozvrhTableModel);
         JScrollPane scrollPane = new JScrollPane(rozvrhTable);
 
         ToolTipManager.sharedInstance().setInitialDelay(0);
-        ToolTipManager.sharedInstance().setDismissDelay(5000); 
+        ToolTipManager.sharedInstance().setReshowDelay(0);
+        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 
         rozvrhTable.setRowHeight(45);
         rozvrhTable.setShowGrid(true);
@@ -216,14 +163,11 @@ public class MainFrame extends JFrame {
         rozvrhTable.getTableHeader().setResizingAllowed(false);
 
         JPanel bottomPanelR = new JPanel();
-        bottomPanelR.setPreferredSize(new Dimension(100, 189));
+        bottomPanelR.setPreferredSize(new Dimension(100, 169));
         rozvrhPanel.add(bottomPanelR, BorderLayout.SOUTH);
 
         JPanel topPanelR = new JPanel();
-        //topPanelR.setPreferredSize(new Dimension(100, 189));
         topPanelR.setBackground(Color.RED);
-        //rozvrhPanel.add(topPanelR, BorderLayout.NORTH);
-
         rozvrhPanel.add(scrollPane, BorderLayout.CENTER);
 
 
@@ -254,6 +198,41 @@ public class MainFrame extends JFrame {
         add(rightPanel, BorderLayout.EAST);
 
         JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
+        bottomPanel.setPreferredSize(new Dimension(1000, 30));
+
+        JPanel legendPanel = new JPanel();
+        legendPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        JPanel prednaskaPanel = new JPanel();
+        prednaskaPanel.setPreferredSize(new Dimension(11, 11));
+        prednaskaPanel.setBackground(Color.decode("#46495b"));
+        legendPanel.add(prednaskaPanel);
+
+        JLabel prednaskaLabel = new JLabel("Přednáška");
+        legendPanel.add(prednaskaLabel);
+        legendPanel.add(new JPanel());
+
+        JPanel cviceniPanel = new JPanel();
+        cviceniPanel.setPreferredSize(new Dimension(11, 11));
+        cviceniPanel.setBackground(Color.decode("#46594b"));
+        legendPanel.add(cviceniPanel);
+
+        JLabel cviceniLabel = new JLabel("Cvičení");
+        legendPanel.add(cviceniLabel);
+        legendPanel.add(new JPanel());
+
+        JPanel seminarPanel = new JPanel();
+        seminarPanel.setPreferredSize(new Dimension(11, 11));
+        seminarPanel.setBackground(Color.decode("#56494b"));
+        legendPanel.add(seminarPanel);
+
+        JLabel seminarLabel = new JLabel("Seminář");
+        legendPanel.add(seminarLabel);
+        legendPanel.add(new JPanel());
+
+        bottomPanel.add(new JPanel(), BorderLayout.WEST);
+        bottomPanel.add(legendPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
 
@@ -262,7 +241,7 @@ public class MainFrame extends JFrame {
         setResizable(false);
     }
 
-    public DefaultTableModel getTableModel() {
+    public ListRozvrhTableModel getTableModel() {
         return tableModel;
     }
 
@@ -303,20 +282,7 @@ public class MainFrame extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        getTableModel().setRowCount(0);
-        for (RozvrhovaAkce rozvrhovaAkce : rozvrhoveAkce) {
-            if(rozvrhovaAkce.getUcitel() != null) {
-                String color = "bbbbbb";
-                if(rozvrhovaAkce.getTypAkce().equals("Přednáška")) {
-                    color = "171d2b";
-                } else if(rozvrhovaAkce.getTypAkce().equals("Cvičení")) {
-                    color = "163821";
-                }
-                getTableModel().addRow(new Object[]{rozvrhovaAkce.getPredmet(), rozvrhovaAkce.getNazev(), 
-                rozvrhovaAkce.getUcitel(), rozvrhovaAkce.getDen(), rozvrhovaAkce.getHodinaSkutOd(), 
-                rozvrhovaAkce.getHodinaSkutDo(), color});
-            }
-        }
+        getTableModel().setRozvrhoveAkce(rozvrhoveAkce);
 
         if(getTableModel().getRowCount() == 0) {
             JOptionPane.showMessageDialog(

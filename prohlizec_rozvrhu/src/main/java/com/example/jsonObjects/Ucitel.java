@@ -1,10 +1,10 @@
 package com.example.jsonObjects;
 
 public class Ucitel {
-    String jmeno;
-    String prijmeni;
-    String titulPred;
-    String titulZa;
+    private String jmeno;
+    private String prijmeni;
+    private String titulPred;
+    private String titulZa;
 
     @Override
     public String toString() {

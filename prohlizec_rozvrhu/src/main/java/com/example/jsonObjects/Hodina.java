@@ -1,7 +1,11 @@
 package com.example.jsonObjects;
 
 public class Hodina {
-    String value;
+    private String value;
+
+    public String getValue() {
+        return value;
+    }
 
     @Override
     public String toString() {

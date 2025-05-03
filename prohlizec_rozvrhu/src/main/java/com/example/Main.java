@@ -25,7 +25,6 @@ public class Main {
 
         parseMistnosti();
         new MainFrame(jsonReader, mistnosti);
-
     }
 
     private static void parseMistnosti() throws IOException {

@@ -1,14 +1,14 @@
 package com.example.jsonObjects;
 
 public class RozvrhovaAkce {
-    String nazev;
-    String predmet;
-    Ucitel ucitel;
-    String den;
-    Hodina hodinaSkutOd;
-    Hodina hodinaSkutDo;
-    String semestr;
-    String typAkce;
+    private String nazev;
+    private String predmet;
+    private Ucitel ucitel;
+    private String den;
+    private Hodina hodinaSkutOd;
+    private Hodina hodinaSkutDo;
+    private String semestr;
+    private String typAkce;
 
     public String getTypAkce() {
         return typAkce;
