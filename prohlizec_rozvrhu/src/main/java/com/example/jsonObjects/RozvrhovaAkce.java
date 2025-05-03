@@ -8,6 +8,11 @@ public class RozvrhovaAkce {
     Hodina hodinaSkutOd;
     Hodina hodinaSkutDo;
     String semestr;
+    String typAkce;
+
+    public String getTypAkce() {
+        return typAkce;
+    }
 
     public RozvrhovaAkce() {
     }

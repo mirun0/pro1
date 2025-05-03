@@ -1,5 +1,6 @@
 package com.example.gui;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -12,12 +13,14 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.ToolTipManager;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import com.example.RozvrhJsonReader;
 import com.example.jsonObjects.RozvrhovaAkce;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
@@ -134,7 +137,7 @@ public class MainFrame extends JFrame {
         add(navbar, BorderLayout.NORTH);
         
         String[][] data = {};
-        String[] columnNames = {"Zkratka", "Název", "Učitel", "Den", "Od", "Do"};
+        String[] columnNames = {"Zkratka", "Název", "Učitel", "Den", "Od", "Do", "c"};
 
         tableModel = new DefaultTableModel(data, columnNames) {
             @Override
@@ -143,14 +146,34 @@ public class MainFrame extends JFrame {
             }
         };
 
-        JTable table = new JTable(tableModel);
-        table.getTableHeader().setReorderingAllowed(false);
+        JTable table = new JTable(tableModel) {
+            @Override
+                public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                    Component c = super.prepareRenderer(renderer, row, column);
+                    if (!isRowSelected(row)) {
+                        Color baseColor = Color.decode("#" + (String)this.getValueAt(row, 6));
+                        c.setBackground(baseColor);
+                    } else {
+                        c.setBackground(getSelectionBackground());
+                    }
+
+                    this.setOpaque(true);
+                    return c;
+                }
+        };
+        // table.getTableHeader().setReorderingAllowed(false);
+        table.setAutoCreateRowSorter(true);
         table.getColumnModel().getColumn(0).setPreferredWidth(20);
         table.getColumnModel().getColumn(1).setPreferredWidth(175);
         table.getColumnModel().getColumn(2).setPreferredWidth(175);
         table.getColumnModel().getColumn(3).setPreferredWidth(30);
         table.getColumnModel().getColumn(4).setPreferredWidth(25);
         table.getColumnModel().getColumn(5).setPreferredWidth(25);
+
+        table.getColumnModel().getColumn(6).setPreferredWidth(0);
+        table.getColumnModel().getColumn(6).setMinWidth(0);
+        table.getColumnModel().getColumn(6).setMaxWidth(0);
+
 
 
 
@@ -190,7 +213,7 @@ public class MainFrame extends JFrame {
         rozvrhTable.setRowHeight(45);
         rozvrhTable.setShowGrid(true);
         rozvrhTable.getTableHeader().setReorderingAllowed(false);
-        table.getTableHeader().setResizingAllowed(false);
+        rozvrhTable.getTableHeader().setResizingAllowed(false);
 
         JPanel bottomPanelR = new JPanel();
         bottomPanelR.setPreferredSize(new Dimension(100, 189));
@@ -282,8 +305,17 @@ public class MainFrame extends JFrame {
         }
         getTableModel().setRowCount(0);
         for (RozvrhovaAkce rozvrhovaAkce : rozvrhoveAkce) {
-            if(rozvrhovaAkce.getUcitel() != null)
-                getTableModel().addRow(new Object[]{rozvrhovaAkce.getPredmet(), rozvrhovaAkce.getNazev(), rozvrhovaAkce.getUcitel(), rozvrhovaAkce.getDen(), rozvrhovaAkce.getHodinaSkutOd(), rozvrhovaAkce.getHodinaSkutDo()});
+            if(rozvrhovaAkce.getUcitel() != null) {
+                String color = "bbbbbb";
+                if(rozvrhovaAkce.getTypAkce().equals("Přednáška")) {
+                    color = "171d2b";
+                } else if(rozvrhovaAkce.getTypAkce().equals("Cvičení")) {
+                    color = "163821";
+                }
+                getTableModel().addRow(new Object[]{rozvrhovaAkce.getPredmet(), rozvrhovaAkce.getNazev(), 
+                rozvrhovaAkce.getUcitel(), rozvrhovaAkce.getDen(), rozvrhovaAkce.getHodinaSkutOd(), 
+                rozvrhovaAkce.getHodinaSkutDo(), color});
+            }
         }
 
         if(getTableModel().getRowCount() == 0) {
